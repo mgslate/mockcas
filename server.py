@@ -138,11 +138,15 @@ class CASRequestHandler(BaseHTTPRequestHandler):
             is_saml = True
         value = self.headers['Authorization'] or ''
         if not value.startswith('Basic '):
-            self.send_error(403, 'Forbidden')
+            self.send_response(401, 'Unauthorized')
+            self.send_header('WWW-Authenticate', 'Basic realm="MockCAS Login"')
+            self.end_headers()
             return
         credentials = b64decode(value[6:]).decode('utf-8').split(':')
         if credentials[1] != self.server.secret:
-            self.send_error(403, 'Forbidden')
+            self.send_response(401, 'Unauthorized')
+            self.send_header('WWW-Authenticate', 'Basic realm="MockCAS Login"')
+            self.end_headers()
             return
         ticket = self.server.generate_ticket(service, credentials[0])
         self.send_response(302, 'Found')
