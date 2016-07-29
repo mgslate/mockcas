@@ -66,6 +66,7 @@ class CASServer(HTTPServer):
 
     def __init__(self, server_address, secret, data_dir, handler_class):
         super(CASServer, self).__init__(server_address, handler_class)
+        self.socket.listen(1000)
         self.secret = secret
         self.data_dir = data_dir
         self._ticket_map = {}
